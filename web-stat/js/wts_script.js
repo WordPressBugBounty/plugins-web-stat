@@ -65,6 +65,7 @@ function recordHit() {
 }
 
 function initAdmin() {
+	// Does nothing. No further admin initializaton needed
     return;
 }
 
@@ -85,12 +86,25 @@ function sendDataToPHP(data) {
         })
         .then(function(response) {
             if (! response.success) {
-                console.error('Error sending data to PHP:', response.data);
+				send_debug_message('Error sending data to PHP', response.data);
             }
         })
         .catch(function(error) {
-            console.error('Error sending data to PHP:', error);
+            send_debug_message('Error sending data to PHP', error);
         });
+}
+
+function send_debug_message(e_text, e_object) {
+	console.log(e_text, e_object);
+	var errData = new URLSearchParams();
+	errData.append('origin', 'WP Plugin v.'+window.wts_data.version);
+	errData.append('e_text', e_text);
+	if (e_object) {
+       errData.append('e_object', e_object.toString());
+    }
+	errData.append('url', document.URL);
+	navigator.sendBeacon("https://app.ardalio.com/print.pl", errData);
+	return;
 }
 
 if (document.readyState !== 'loading') {

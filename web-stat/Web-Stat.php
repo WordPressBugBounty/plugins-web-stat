@@ -3,7 +3,7 @@
 Plugin Name: Web-Stat
 Plugin URI: https://www.web-stat.com/
 Description: Free, real-time stats for your website with full visitor details and traffic analytics.
-Version: 2.4
+Version: 2.5
 Author: <a href="https://www.web-stat.com" target="_new">Web-Stat</a>
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 class WebStatPlugin {
-    const VERSION = '2.4';
+    const VERSION = '2.5';
     private $site_id = null;
     private $alias = null;
     private $db = null;
@@ -49,38 +49,44 @@ class WebStatPlugin {
         });
     }
     
-    public static function activate() {
-       update_option('wts_alias', '');
-    }
-    
-    private function init_options() {
-        // Initialize plugin options
-        $this->supported_languages = ['de', 'es', 'fr', 'it', 'ja', 'pt', 'ru', 'tr'];
-        $this->site_id = get_option('wts_site_id');
-        if (!$this->site_id) {
-            $this->site_id = wp_generate_uuid4();
-            update_option('wts_site_id', $this->site_id);
-        }
-        $this->alias = get_option('wts_alias');
-        $this->db = get_option('wts_db');
-        $this->oc_a2 = is_admin() ? get_option('wts_oc_a2') : null;
-        $this->language = substr(get_bloginfo('language'), 0, 2);
-        if (!preg_match('/^[a-z]{2}$/', $this->language)) {
-            $this->language = 'en';
-        }
-        $this->old_uid = get_option('wts_web_stat_uid');
-        $this->has_json = extension_loaded('json');
-        $this->has_openssl = extension_loaded('openssl');
-    }
-    
+    // load translations
     public function load_textdomain() {
         load_plugin_textdomain('web-stat', false, dirname(plugin_basename(__FILE__)) . '/languages');
     }
 
+    // Reset alias if plugin is activated or re-activated
+    public static function reset_wts_data() {
+		delete_option('wts_alias');
+		delete_option('wts_db');
+		delete_option('wts_oc_a2');
+    }
+    
+    // Get stored data if any and create a site_id if none
+    private function init_options() {
+        // Initialize plugin options
+        $this->supported_languages = ['de', 'es', 'fr', 'it', 'ja', 'pt', 'ru', 'tr'];
+        $this->site_id = get_option('wts_site_id') ?? null;
+        if (!$this->site_id) {
+            $this->site_id = wp_generate_uuid4();
+            update_option('wts_site_id', $this->site_id);
+        }
+        $this->alias = get_option('wts_alias') ?? null;
+        $this->db = get_option('wts_db') ?? null;
+        $this->oc_a2 = is_admin() ? (get_option('wts_oc_a2') ?? null) : null;
+        $this->language = substr(get_bloginfo('language'), 0, 2);
+        if (!preg_match('/^[a-z]{2}$/', $this->language)) {
+            $this->language = 'en';
+        }
+        $this->old_uid = get_option('wts_web_stat_uid') ?? null;
+        $this->has_json = extension_loaded('json');
+        $this->has_openssl = extension_loaded('openssl');
+    }
+    
+
     // Fetch data if needed then load log7 or admin options
     public function enqueue_scripts() {
         wp_enqueue_script('wts_init_js', plugin_dir_url(__FILE__) . 'js/wts_script.js', array(), '1.0.0', true);
-        $wts_data = array('ajax_url' => 'https://app.ardalio.com/ajax.pl', 'action' => 'get_wp_data', 'version' => self::VERSION, 'alias' => $this->alias, 'db' => $this->db, 'site_id' => $this->site_id, 'old_uid' => $this->old_uid, 'url' => get_bloginfo('url'), 'language' => get_bloginfo('language'), 'time_zone' => get_option('timezone_string'), 'gmt_offset' => get_option('gmt_offset') );
+        $wts_data = array('ajax_url' => 'https://app.ardalio.com/ajax.pl', 'action' => 'get_wp_data', 'version' => self::VERSION, 'alias' => $this->alias, 'db' => $this->db, 'site_id' => $this->site_id, 'old_uid' => $this->old_uid, 'url' => get_bloginfo('url'), 'language' => get_bloginfo('language'), 'time_zone' => get_option('timezone_string'), 'gmt_offset' => get_option('gmt_offset'), 'email' => get_option('admin_email') );
         if (is_admin()) {
             $nonce = wp_create_nonce('wts_ajax_nonce');
             if ($this->has_openssl) {
@@ -111,16 +117,22 @@ class WebStatPlugin {
     // If data was fetched by JS, recover it and save it
     public function handle_ajax_data() {
         if (!$this->has_json) {
-            return;
+            // send error back to wts_init_js
+            header("Content-Type: application/json");
+    		echo '{ "success": false, "data": "JSON not available" }';
+   			wp_die();
         }
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wts_ajax_nonce')) {
+            // send error back to wts_init_js
             wp_send_json_error('Invalid nonce');
             return;
         }
         $data = isset($_POST['data']) ? $_POST['data'] : '';
         if (!empty($data)) {
             $data = json_decode(stripslashes($data), true);
-            if (isset($data['alias']) && isset($data['db'])) {
+			if (isset($data['alias'], $data['db']) &&
+   			 preg_match('/^\d+$/', $data['alias']) &&
+   			 preg_match('/^\d{1,2}$/', $data['db'])) {
                 $this->alias = $data['alias'];
                 $this->db = $data['db'];
                 update_option('wts_alias', $this->alias);
@@ -130,6 +142,16 @@ class WebStatPlugin {
                 }
                 wp_send_json_success();
             }
+            else{
+				$aliasValue = $data['alias'] ?? 'not set';
+				$dbValue = $data['db'] ?? 'not set';
+				wp_send_json_error('wts_init_js sent invalid alias (' . $aliasValue . ') or invalid db (' . $dbValue . ')');
+            	return;
+            }
+        }
+        else{
+			wp_send_json_error(' wts_init_js sent back empty data');
+            return;
         }
     }
     
@@ -140,7 +162,6 @@ class WebStatPlugin {
     }
     
     public function add_admin_menu() {
-        $host = $this->get_host();  
     	// Add the main Web-Stat menu
     	add_menu_page(
         	__('Web-Stat Traffic Analytics', 'web-stat'), // Page title
@@ -204,6 +225,9 @@ class WebStatPlugin {
     private function show_page($page) {
         $host = $this->get_host();
         $url = $host . '/' . $page . '?oc_a2=' . $this->oc_a2 . '&version=' . self::VERSION . '&source=WordPress';
+        if (!$host || !$page || !$this->oc_a2){
+           self::send_php_error('Could not display dashboard / host = ' . $host . ' / page = ' . $page . ' / oc_a2 = ' . $this->oc_a2);
+        }
         echo '
         <style>
         #wpcontent {
@@ -214,18 +238,16 @@ class WebStatPlugin {
         }
         #wts_iframe{
             font-size:0.9em;
+            margin: 0px !important;
+  			overflow: hidden !important;
+  			height: 100vh !important;
+  			width: 100% !important;
+  			border: 0px;
         }
         .notice {
             display: none !important;
         }
         </style>
-        <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var iframe = document.getElementById("wts_iframe");
-            var container = document.getElementById("wpbody");
-            iframe.style.height = container.clientHeight + "px";
-        });
-        </script>
         <iframe src="' . $url . '" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" id="wts_iframe"></iframe>';
     }
     private function get_host() {
@@ -254,6 +276,9 @@ class WebStatPlugin {
         $dashboard_url = urlencode(admin_url());
         $host = $this->get_host();
         $url = $host . '/wpFrame.htm?&oc_a2=' . $this->oc_a2 . '&version=' . self::VERSION . '&dashboard_url=' . $dashboard_url;
+        if (!$host || !$this->oc_a2){
+           self::send_php_error('Could not display dashboard widget / host = ' . $host . ' / oc_a2 = ' . $this->oc_a2 . ' / dashboard_url = '.$dashboard_url);
+        }
         echo '<iframe src="' . $url . '" style="width:100%; height:500px;" id="wts_iframe"></iframe>';
     }
     
@@ -323,8 +348,34 @@ class WebStatPlugin {
             });
         </script>";
     }
+    
+	public static function send_php_error($e_text, $e_object = '') {
+		// Use the plugin version if available
+		$version = defined('self::VERSION') ? self::VERSION : 'unknown';
+     
+		// Build the error data array
+		$errData = array(
+			'origin'   => 'WP Plugin v.' . $version,
+       		'e_text'   => $e_text,
+        	// If $e_object is not a string, encode it as JSON
+        	'e_object' => is_string($e_object) ? $e_object : json_encode($e_object),
+        	'url'      => home_url()
+		);
+    
+    	// Send the data using wp_remote_post()
+    	wp_remote_post('https://app.ardalio.com/print.pl', array(
+        	'method' => 'POST',
+        	'body'   => $errData,
+    	));
+	}
+
+
 }
 
-register_activation_hook(__FILE__, ['WebStatPlugin', 'activate']);
+
+
+
+register_activation_hook(__FILE__, ['WebStatPlugin', 'reset_wts_data']);
+register_deactivation_hook(__FILE__, ['WebStatPlugin', 'reset_wts_data']);
 
 new WebStatPlugin();

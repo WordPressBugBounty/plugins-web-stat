@@ -3,8 +3,8 @@ Contributors: webstat146827481
 Tags: analytics, web analytics, visitor analytics, real-time analytics, site statistics
 Requires PHP: 5.2.4
 Requires at least: 4.9.5
-Tested up to: 6.6.1
-Stable tag: 2.4
+Tested up to: 6.7.2
+Stable tag: 2.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -106,6 +106,8 @@ Web-Stat Analytics loads automatically from the WordPress admin menu. If you pre
 
 
 == Changelog ==
+= 2.5 =
+* fixed display issue in dashboard and improved error reporting. Please uppdate your plugin to this version
 = 2.4 =
 * housekeeping - stable version
 = 2.3 =
