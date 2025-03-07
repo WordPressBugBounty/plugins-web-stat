@@ -1,10 +1,10 @@
-=== Web-Stat Analytics - Free Real-Time Web Analytics ===
+=== Web-Stat ===
 Contributors: webstat146827481
-Tags: analytics, web analytics, visitor analytics, real-time analytics, site statistics
+Tags: web analytics, web-stat, web stat, web stats, web analytics, traffic analytics, traffic analysis, counter, hit counter, web counter, analytics, web traffic analysis, measure site traffic, traffic monitoring, visitors monitoring
 Requires PHP: 5.2.4
 Requires at least: 4.9.5
 Tested up to: 6.7.2
-Stable tag: 2.5
+Stable tag: 2.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,10 +46,19 @@ We'd love to hear from you! Questions? Comments? Ideas? Drop us a line at any ti
 == Plugin / Theme Support ==
 This plugin works out of the box for all themes.
 
+= Localization =
+* English at [https://www.web-stat.com](https://www.web-stat.com/)
+* French at [https://www.web-stat.fr](https://www.web-stat.fr/)
+* Spanish at [https://es.web-stat.com](https://es.web-stat.com/)
+* Portuguese at [https://pt.web-stat.com](https://pt.web-stat.com/)
+* Italian at [https://it.web-stat.com](https://it.web-stat.com/)
+* German at [https://de.web-stat.com](https://de.web-stat.com/)
+* Turkish at [https://tr.web-stat.com](https://tr.web-stat.com/)
+* Russian at [https://ru.web-stat.com](https://ru.web-stat.com/)
+
 == Learn More ==
 - [Visit our website](https://www.web-stat.com) for detailed documentation and support.
 - [Contact us](https://www.web-stat.com/contact_us.htm) for any inquiries or assistance.
-
 
 == Installation ==
 1. Search for 'Web-Stat' in the WordPress plugin library
@@ -106,8 +115,15 @@ Web-Stat Analytics loads automatically from the WordPress admin menu. If you pre
 
 
 == Changelog ==
+= 2.5.1 =
+* Released: 2025-03-07
+* Allowed stats access to editors
+* Please uppdate your plugin to this version!
 = 2.5 =
-* fixed display issue in dashboard and improved error reporting. Please uppdate your plugin to this version
+* Released: 2025-02-23
+* Fixed display issue in dashboard.
+* Improved error reporting.
+* Please uppdate your plugin to this version!
 = 2.4 =
 * housekeeping - stable version
 = 2.3 =
