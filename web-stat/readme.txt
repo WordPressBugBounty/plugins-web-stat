@@ -4,7 +4,7 @@ Tags: web analytics, web-stat, web stat, web stats, web analytics, traffic analy
 Requires PHP: 5.2.4
 Requires at least: 4.9.5
 Tested up to: 6.7.2
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -115,9 +115,9 @@ Web-Stat Analytics loads automatically from the WordPress admin menu. If you pre
 
 
 == Changelog ==
-= 2.5.1 =
+= 2.5.2 =
 * Released: 2025-03-07
-* Allowed stats access to editors
+* Allowed stats access to all admins
 * Please uppdate your plugin to this version!
 = 2.5 =
 * Released: 2025-02-23

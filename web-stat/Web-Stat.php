@@ -3,7 +3,7 @@
 Plugin Name: Web-Stat
 Plugin URI: https://www.web-stat.com/
 Description: Free, real-time stats for your website with full visitor details and traffic analytics.
-Version: 2.5.1
+Version: 2.5.2
 Author: <a href="https://www.web-stat.com" target="_new">Web-Stat</a>
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -166,7 +166,7 @@ class WebStatPlugin {
     	add_menu_page(
         	__('Web-Stat Traffic Analytics', 'web-stat'), // Page title
         	__('Web-Stat', 'web-stat'), // Menu title
-        	'edit_others_posts', // Capability
+        	'install_plugins', // Capability
         	'webstat-stats', // Menu slug (changed to avoid conflicts)
         	[$this, 'show_stats_page'], // Function to display the page
         	'dashicons-chart-bar' // Icon
@@ -176,7 +176,7 @@ class WebStatPlugin {
         	'webstat-stats', // Parent slug (should match the menu slug of the parent item)
    			__('View Stats', 'web-stat'), // Page title
 			__('View Stats', 'web-stat'), // Submenu title (this will show in the submenu)
-			'edit_others_posts', // Capability
+			'install_plugins', // Capability
 			'webstat-stats', // Menu slug
 			[$this, 'show_stats_page'] // Function to display the page
     	);
@@ -185,7 +185,7 @@ class WebStatPlugin {
         	'webstat-stats', // Parent slug (use the slug of the top-level menu)
         	__('Configure', 'web-stat'), // Page title
         	__('Configure', 'web-stat'), // Submenu title
-        	'edit_others_posts', // Capability
+        	'install_plugins', // Capability
         	'webstat-settings', // Menu slug
         	[$this, 'show_settings_page'] // Function to display the page
     	);
@@ -195,7 +195,7 @@ class WebStatPlugin {
         	'webstat-stats', // Parent slug (use the slug of the top-level menu)
         	__('Get Support', 'web-stat'), // Page title
         	__('Get Support', 'web-stat'), // Menu title
-        	'edit_others_posts', // Capability
+        	'install_plugins', // Capability
         	'webstat-contact', // Menu slug
         	[$this, 'show_contact_page'] // Function to display the page
     	);
@@ -205,7 +205,7 @@ class WebStatPlugin {
         	'webstat-stats', // Parent slug (use the slug of the top-level menu)
         	__('Upgrade','web-stat'), // Page title
         	__('Upgrade', 'web-stat'), // Submenu title
-        	'edit_others_posts', // Capability
+        	'install_plugins', // Capability
         	'webstat-plans', // Menu slug
         	[$this, 'show_plans_page'] // Function to display the iframe page
     	);
@@ -259,7 +259,7 @@ class WebStatPlugin {
     }
     
     public function add_dashboard_widget() {
-        if ( ! current_user_can('edit_others_posts') ) {
+        if ( ! current_user_can('install_plugins') ) {
 			return;
     	}
         wp_add_dashboard_widget('wts_dashboard_widget', // Widget slug
@@ -268,7 +268,7 @@ class WebStatPlugin {
         );
     }
     public function reorder_dashboard_widgets() {
-            if ( ! current_user_can('edit_others_posts') ) {
+        if ( ! current_user_can('install_plugins') ) {
 			return;
     	}
         global $wp_meta_boxes;
