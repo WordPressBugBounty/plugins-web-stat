@@ -3,7 +3,7 @@
 Plugin Name: Web-Stat
 Plugin URI: https://www.web-stat.com/
 Description: Free, real-time stats for your website with full visitor details and traffic analytics.
-Version: 2.5.2
+Version: 2.5.3
 Author: <a href="https://www.web-stat.com" target="_new">Web-Stat</a>
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -30,7 +30,7 @@ class WebStatPlugin {
     
     public function __construct() {
         // Initialize plugin options
-		$this->init_options();
+	    add_action('init', [$this, 'init_options'], 5);
         // Hook into WordPress actions and filters
         add_action('plugins_loaded', [$this, 'load_textdomain']);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
@@ -62,7 +62,7 @@ class WebStatPlugin {
     }
     
     // Get stored data if any and create a site_id if none
-    private function init_options() {
+    public function init_options() {
         // Initialize plugin options
         $this->supported_languages = ['de', 'es', 'fr', 'it', 'ja', 'pt', 'ru', 'tr'];
         $this->site_id = get_option('wts_site_id') ?? null;
@@ -72,7 +72,7 @@ class WebStatPlugin {
         }
         $this->alias = get_option('wts_alias') ?? null;
         $this->db = get_option('wts_db') ?? null;
-        $this->oc_a2 = is_admin() ? (get_option('wts_oc_a2') ?? null) : null;
+        $this->oc_a2 = current_user_can('install_plugins') ? (get_option('wts_oc_a2') ?? null) : null;
         $this->language = substr(get_bloginfo('language'), 0, 2);
         if (!preg_match('/^[a-z]{2}$/', $this->language)) {
             $this->language = 'en';
@@ -87,7 +87,7 @@ class WebStatPlugin {
     public function enqueue_scripts() {
         wp_enqueue_script('wts_init_js', plugin_dir_url(__FILE__) . 'js/wts_script.js', array(), '1.0.0', true);
         $wts_data = array('ajax_url' => 'https://app.ardalio.com/ajax.pl', 'action' => 'get_wp_data', 'version' => self::VERSION, 'alias' => $this->alias, 'db' => $this->db, 'site_id' => $this->site_id, 'old_uid' => $this->old_uid, 'url' => get_bloginfo('url'), 'language' => get_bloginfo('language'), 'time_zone' => get_option('timezone_string'), 'gmt_offset' => get_option('gmt_offset'), 'email' => get_option('admin_email') );
-        if (is_admin()) {
+        if (current_user_can('install_plugins')) {
             $nonce = wp_create_nonce('wts_ajax_nonce');
             if ($this->has_openssl) {
                 $publicKey = file_get_contents(__DIR__ . '/includes/public_key.pem');
