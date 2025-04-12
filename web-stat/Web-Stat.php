@@ -3,7 +3,7 @@
 Plugin Name: Web-Stat
 Plugin URI: https://www.web-stat.com/
 Description: Free, real-time stats for your website with full visitor details and traffic analytics.
-Version: 2.5.3
+Version: 2.5.4
 Author: <a href="https://www.web-stat.com" target="_new">Web-Stat</a>
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -27,6 +27,7 @@ class WebStatPlugin {
     private $has_openssl = false;
     private $has_json = false;
     private $oc_a2 = null;
+    private $is_admin = 0;
     
     public function __construct() {
         // Initialize plugin options
@@ -42,11 +43,6 @@ class WebStatPlugin {
         add_filter('plugin_row_meta', [$this, 'add_plugin_row_meta'], 10, 2);
         add_filter('plugin_action_links', [$this, 'add_plugin_action_links'], 10, 2);
         add_action('admin_head-plugins.php', [$this, 'add_custom_css']);
-        
-        // Manually load the .mo file as a fallback
-        add_action('init', function() {
-            load_textdomain('web-stat', WP_PLUGIN_DIR . '/Web-Stat/languages/web-stat-' . get_locale() . '.mo');
-        });
     }
     
     // load translations
@@ -65,21 +61,24 @@ class WebStatPlugin {
     public function init_options() {
         // Initialize plugin options
         $this->supported_languages = ['de', 'es', 'fr', 'it', 'ja', 'pt', 'ru', 'tr'];
-        $this->site_id = get_option('wts_site_id') ?? null;
+        $this->site_id = get_option('wts_site_id');
         if (!$this->site_id) {
             $this->site_id = wp_generate_uuid4();
             update_option('wts_site_id', $this->site_id);
         }
-        $this->alias = get_option('wts_alias') ?? null;
-        $this->db = get_option('wts_db') ?? null;
-        $this->oc_a2 = current_user_can('install_plugins') ? (get_option('wts_oc_a2') ?? null) : null;
+        $this->alias = get_option('wts_alias');
+        $this->db = get_option('wts_db');
+        $this->oc_a2 = current_user_can('install_plugins') ? (get_option('wts_oc_a2')) : null;
         $this->language = substr(get_bloginfo('language'), 0, 2);
         if (!preg_match('/^[a-z]{2}$/', $this->language)) {
             $this->language = 'en';
         }
-        $this->old_uid = get_option('wts_web_stat_uid') ?? null;
+        $this->old_uid = get_option('wts_web_stat_uid');
         $this->has_json = extension_loaded('json');
         $this->has_openssl = extension_loaded('openssl');
+        if (current_user_can('install_plugins')) {
+           $this->is_admin = 1;
+        }
     }
     
 
@@ -87,7 +86,7 @@ class WebStatPlugin {
     public function enqueue_scripts() {
         wp_enqueue_script('wts_init_js', plugin_dir_url(__FILE__) . 'js/wts_script.js', array(), '1.0.0', true);
         $wts_data = array('ajax_url' => 'https://app.ardalio.com/ajax.pl', 'action' => 'get_wp_data', 'version' => self::VERSION, 'alias' => $this->alias, 'db' => $this->db, 'site_id' => $this->site_id, 'old_uid' => $this->old_uid, 'url' => get_bloginfo('url'), 'language' => get_bloginfo('language'), 'time_zone' => get_option('timezone_string'), 'gmt_offset' => get_option('gmt_offset'), 'email' => get_option('admin_email') );
-        if (current_user_can('install_plugins')) {
+        if ($this->is_admin) {
             $nonce = wp_create_nonce('wts_ajax_nonce');
             if ($this->has_openssl) {
                 $publicKey = file_get_contents(__DIR__ . '/includes/public_key.pem');
@@ -102,6 +101,10 @@ class WebStatPlugin {
             $wts_data['nonce'] = $nonce;
             $wts_data['enc'] = $encryptedData;
             $wts_data['has_openssl'] = $this->has_openssl;
+            $current_user = wp_get_current_user();
+            $user_info = json_encode(['id' => $current_user->ID, 'date_registered' => $current_user->user_registered, 'email' => $current_user->user_email, 'name' => $current_user->display_name, 'pic' => get_avatar_url($current_user), ]);
+            $wts_data['user_info'] = $user_info;
+            $wts_data['user_id'] = $current_user->ID;              
         } else {
             if (is_user_logged_in() && $this->has_json) {
                 $current_user = wp_get_current_user();
@@ -224,7 +227,7 @@ class WebStatPlugin {
     }
     private function show_page($page) {
         $host = $this->get_host();
-        $url = $host . '/' . $page . '?oc_a2=' . $this->oc_a2 . '&version=' . self::VERSION . '&source=WordPress';
+        $url = $host . '/' . $page . '?oc_a2=' . $this->oc_a2 . '&is_admin=' . $this->is_admin . '&version=' . self::VERSION . '&source=WordPress';
         if (!$host || !$page || !$this->oc_a2){
            self::send_php_error('Could not display dashboard / host = ' . $host . ' / page = ' . $page . ' / oc_a2 = ' . $this->oc_a2);
         }

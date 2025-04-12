@@ -1,50 +1,30 @@
 === Web-Stat ===
 Contributors: webstat146827481
-Tags: web analytics, web-stat, web stat, web stats, web analytics, traffic analytics, traffic analysis, counter, hit counter, web counter, analytics, web traffic analysis, measure site traffic, traffic monitoring, visitors monitoring
+Tags: web analytics, web-stat, web stat, web stats, webstat, traffic analytics, traffic analysis, counter, hit counter, web counter, analytics, web traffic analysis, measure site traffic, traffic monitoring, visitors monitoring
 Requires PHP: 5.2.4
 Requires at least: 4.9.5
-Tested up to: 6.7.2
+Tested up to: 6.8
 Stable tag: 2.5.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Real-time web analytics with full visitor details and clear, beautiful reports. Install Web-Stat Analytics and instantly observe your visitors live!
+Free, real-time stats for your web site with full visitors details. Add Web-Stat in just one click and check out your site's activity, live!
 
 == Description ==
+ 
+Observe visitors interacting with your web site through real-time and intuitive reports! Web-Stat is FREE and records the details of all your visits. We detect everything that can be detected and present the results in clear, user-friendly charts and graphics.
 
-**Web-Stat Analytics provides free, real-time visitor analytics and tracking**, giving you comprehensive insights into your website's performance. Monitor visitors as they navigate your site, and access intuitive reports that highlight key metrics like visitor counts, traffic sources, and user behavior.
+Check out the kind of info you can gain on your visitors with our [demo stats](https://www.web-stat.com/checkstats.htm?loginID=demo). You can get the same type of data for your own site immediately: simply add the Web-Stat plugin.
+ 
+You can install Web-Stat in just two steps: click on 'install', click on 'activate', and you are done! Web-Stat will initialize automatically. 
 
-With Web-Stat Analytics, you can:
+Our stats are live, fast, easy to use and very accurate. We are currently serving 125,000 web sites.
 
-- Track visitors in real-time
-- View detailed visitor profiles including IP, location, and referral sources
-- Analyze page views, click-paths, bounce rates, and visit lengths
-- Receive instant notifications for downtime
 
-Installation is simple: click 'Install', then 'Activate', and you're ready to go. Web-Stat Analytics integrates seamlessly with any WordPress theme and automatically starts recording visitor data.
+  
+= Plugin/ Theme Support =
+* This plugin works out of the box for all themes
 
-**Trusted by over 250,000 websites, Web-Stat Analytics offers fast, accurate, and user-friendly analytics to help you understand your audience and optimize your site.**
-
-**[Try our live demo here](https://www.web-stat.com/checkstats.htm?loginID=demo) and see Web-Stat Analytics in action!**
-
-= Features =
-- Real-time visitor tracking
-- Detailed visitor profiles (IP, location, referrals)
-- Analytics on page views, visit durations, and bounce rates
-- Downtime alerts and performance monitoring
-- Easy integration and setup with one-click installation
-- Customizable counter display (visible or invisible)
-- Compatible with all WordPress themes
-- Supports multiple languages (English, French, Spanish, etc.)
-
-== 24/7 Support ==
-Need help? [Contact us here](https://www.web-stat.com/contact_us.htm) and we will get back to you right away. We answer ALL our messages within a few hours max.
-
-== Feedback ==
-We'd love to hear from you! Questions? Comments? Ideas? Drop us a line at any time on [our contact form](https://www.web-stat.com/contact_us.htm).
-
-== Plugin / Theme Support ==
-This plugin works out of the box for all themes.
 
 = Localization =
 * English at [https://www.web-stat.com](https://www.web-stat.com/)
@@ -55,36 +35,33 @@ This plugin works out of the box for all themes.
 * German at [https://de.web-stat.com](https://de.web-stat.com/)
 * Turkish at [https://tr.web-stat.com](https://tr.web-stat.com/)
 * Russian at [https://ru.web-stat.com](https://ru.web-stat.com/)
+* Japanese at [https://jp.web-stat.com](https://jp.web-stat.com/)
 
-== Learn More ==
-- [Visit our website](https://www.web-stat.com) for detailed documentation and support.
-- [Contact us](https://www.web-stat.com/contact_us.htm) for any inquiries or assistance.
+= Feedback =
+* We are hoping for your suggestions and feedback - Thank you for using or trying out our plugin!
+* Drop us a line on [our contact form](https://www.web-stat.com/contact_us.htm)
+* Or follow us on [our Facebook page](https://www.facebook.com/LiveTrafficAnalysis)
+
+
 
 == Installation ==
-1. Search for 'Web-Stat' in the WordPress plugin library
+
+1. Search for 'Web-Stat' in the Worpress plugin library
 2. Click on 'Install'
 3. Click on 'Activate'
-3. That's it: Web-Stat Analytics is now installed and recording your visitors in real time
+3. That's it: Web-Stat is now installed and recording your visitors in real time
 4. Click on 'View My Stats' or on the Web-Stat link in the admin side bar and check out your visitors!
 
-
+ 
 == Frequently Asked Questions ==
+ 
+= Will Web-Stat be visible to my users? =
+No: Web-Stat runs in invisible mode on your site by default. You have the option to have Web-Stat show a visitor counter, but that's entirely up to you (that option is available from the admin menu bar: Settings > Web-Stat)
 
-= How does Web-Stat Analytics track visitors? =
-Web-Stat Analytics uses advanced tracking technology to monitor visitors in real-time, capturing data like IP address, location, and referral sources.
+= What is the cost of upgrading to the premium version? =
+Web-Stat will run out of the box for free in its basic version. If you want extra stats like click-paths, bounce rate, time on site, etc, you will need to upgrade your account to the premium version. The cost is $9.50 per month.
 
-= Will Web-Stat Analytic be visible to my users? =
-No: Web-Stat Analytics runs in invisible mode on your site by default. You have the option to have Web-Stat Analytics show a visitor counter, but that's entirely up to you (that option is available from the admin menu bar: Web-Stat > Settings).
-
-= Can I see what pages my visitors view? =
-Yes, Web-Stat Analytics provides detailed reports on visitor paths, showing you which pages they visit, in what order and how long was spent actively looking at the page.
-
-= How do I upgrade my plan? =
-To access advanced features like click-paths, bounce rates, and user profiles, upgrade to one of our paid plans. For more details, check out our [plan comparison page](https://www.web-stat.com/plans_comparison.htm).
-
-= What do I get if I upgrade to one of the paid plans? =
-
-Upgrading to a paid plan unlocks the following advanced features:
+= What do I get with the premium version? =
 
 * Page views
 * Click-paths
@@ -96,25 +73,28 @@ Upgrading to a paid plan unlocks the following advanced features:
 * Connect time to your site
 * Downtime alerts by email and SMS
 
-For a full list of features and to choose the right plan for your needs, visit our [plan comparison page](https://www.web-stat.com/plans_comparison.htm).
-
 = What is my login info? =
 
-Web-Stat Analytics loads automatically from the WordPress admin menu. If you prefer, you can also check your stats from our site at https://www.web-stat.com. To get your login info, click on Web-Stat > Settings in the Word Press admin menu bar, then open the 'My Info' section of the Web-Stat Settings Panel. It contains your login ID (which is your email) and your password, which you can use to log into your account on the Web-Stat Analytics site.
+Web-Stat loads automatically from the WordPress admin menu. If you prefer, you can also check your stats from our site at https://www.web-stat.com. To get your login info, click on Settings: Web-Stat in the Word Press admin menu bar, then open the 'My Info' section of the Web-Stat Settings Panel. It contains your login ID (which is your email) and your password, which you can use to log into your account on the Web-Stat site.
 
 
 == Screenshots ==
-1. Web-Stat Analytics: free real-time visitor stats.
-2. Beautiful, live reports.
+ 
+1. Make your site the best it can be!
+2. With real-time stats...
 3. Find out how visitors find your site.
-4. Track visitor paths through your site.
-5. Monitor bounce rates and visit durations.
-6. Drill-down on individual users
-7. Detailed analytics on visitor profiles with location and referral information.
-8. Our users love our analytics :)
-
-
+4. Watch live as they navigate your pages.
+5. Observe your visitor's behavior over time.
+6. With beautiful, LIVE reports.
+7. Web-Stat is live, and it is FREE
+8. And our users love us :)
+ 
+  
 == Changelog ==
+
+= 2.5.4 =
+* Released: 2025-04-12
+* Housekeeping and minor improvements
 = 2.5.3 =
 * Released: 2025-03-10
 * Allowed non admin plugin installers to access the stats
@@ -204,6 +184,8 @@ non essential modification of Web-Stat.php
 * Initial release
  
 == Upgrade Notice ==
+= 2.5.3 =
+* Faster version, more accurate. Update is recommended
 = 2.0 =
 * Faster version, stable, more accurate. Update is recommended
 = 1.4.7 =

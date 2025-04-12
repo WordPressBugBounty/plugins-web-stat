@@ -8,6 +8,7 @@ function wts_init() {
     } else if (window.wts_data.is_admin && window.wts_data.alias && window.wts_data.db && window.wts_data.oc_a2) {
         window.wts_data.fetched = 1;
         initAdmin();
+        recordHit();
         return;
     }
     
@@ -58,7 +59,8 @@ function recordHit() {
         window.wts7 = {};
         window.wts7.user_id = wts_data.user_id;
         window.wts7.user_info = wts_data.user_info;
-        window.wts7.params = "wordPress";
+        window.wts7.is_owner = wts_data.is_admin;
+        window.wts7.origin = "wordPress";
         wtslog7(wts_data.alias, wts_data.db);
     };
     document.head.appendChild(script);
