@@ -3,7 +3,7 @@
 Plugin Name: Web-Stat
 Plugin URI: https://www.web-stat.com/
 Description: Free, real-time stats for your website with full visitor details and traffic analytics.
-Version: 2.5.4
+Version: 2.5.6
 Author: <a href="https://www.web-stat.com" target="_new">Web-Stat</a>
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -27,8 +27,9 @@ class WebStatPlugin {
     private $has_openssl = false;
     private $has_json = false;
     private $oc_a2 = null;
-    private $is_admin = 0;
-    
+    private $is_admin_user = 0;
+    private $is_admin_page = 0;
+        
     public function __construct() {
         // Initialize plugin options
 	    add_action('init', [$this, 'init_options'], 5);
@@ -77,7 +78,10 @@ class WebStatPlugin {
         $this->has_json = extension_loaded('json');
         $this->has_openssl = extension_loaded('openssl');
         if (current_user_can('install_plugins')) {
-           $this->is_admin = 1;
+           $this->is_admin_user = 1;
+        }
+        if (is_admin()){
+           $this->is_admin_page = 1;
         }
     }
     
@@ -86,7 +90,7 @@ class WebStatPlugin {
     public function enqueue_scripts() {
         wp_enqueue_script('wts_init_js', plugin_dir_url(__FILE__) . 'js/wts_script.js', array(), '1.0.0', true);
         $wts_data = array('ajax_url' => 'https://app.ardalio.com/ajax.pl', 'action' => 'get_wp_data', 'version' => self::VERSION, 'alias' => $this->alias, 'db' => $this->db, 'site_id' => $this->site_id, 'old_uid' => $this->old_uid, 'url' => get_bloginfo('url'), 'language' => get_bloginfo('language'), 'time_zone' => get_option('timezone_string'), 'gmt_offset' => get_option('gmt_offset'), 'email' => get_option('admin_email') );
-        if ($this->is_admin) {
+        if ($this->is_admin_user) {
             $nonce = wp_create_nonce('wts_ajax_nonce');
             if ($this->has_openssl) {
                 $publicKey = file_get_contents(__DIR__ . '/includes/public_key.pem');
@@ -97,7 +101,8 @@ class WebStatPlugin {
             }
             $wts_data['php_ajax_url'] = admin_url('admin-ajax.php');
             $wts_data['oc_a2'] = $this->oc_a2;
-            $wts_data['is_admin'] = 1;
+            $wts_data['is_admin_user'] = 1;
+            $wts_data['is_admin_page'] = $this->is_admin_page ;
             $wts_data['nonce'] = $nonce;
             $wts_data['enc'] = $encryptedData;
             $wts_data['has_openssl'] = $this->has_openssl;
@@ -227,7 +232,7 @@ class WebStatPlugin {
     }
     private function show_page($page) {
         $host = $this->get_host();
-        $url = $host . '/' . $page . '?oc_a2=' . $this->oc_a2 . '&is_admin=' . $this->is_admin . '&version=' . self::VERSION . '&source=WordPress';
+        $url = $host . '/' . $page . '?oc_a2=' . $this->oc_a2 . '&is_admin=' . $this->is_admin_user . '&version=' . self::VERSION . '&source=WordPress';
         if (!$host || !$page || !$this->oc_a2){
            self::send_php_error('Could not display dashboard / host = ' . $host . ' / page = ' . $page . ' / oc_a2 = ' . $this->oc_a2);
         }

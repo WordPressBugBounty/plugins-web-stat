@@ -1,21 +1,19 @@
 function wts_init() {
     window.wts_data = window.wts_data || {};
-
-    if (!window.wts_data.is_admin && window.wts_data.alias && window.wts_data.db) {
+    
+    if (window.wts_data.is_admin_user === "0" && window.wts_data.alias && window.wts_data.db) {
         window.wts_data.fetched = 1;
-        recordHit();
-        return;
-    } else if (window.wts_data.is_admin && window.wts_data.alias && window.wts_data.db && window.wts_data.oc_a2) {
+    } else if (window.wts_data.is_admin_user === "1" && window.wts_data.alias && window.wts_data.db && window.wts_data.oc_a2) {
         window.wts_data.fetched = 1;
-        initAdmin();
-        recordHit();
-        return;
     }
+
+	if (window.wts_data.fetched == 1 && window.wts_data.is_admin_page === "0"){
+    	recordHit();
+        return;
+     }
     
     fetchData().then(function() {
-        if (window.wts_data.is_admin) {
-            initAdmin();
-        } else {
+        if (window.wts_data.is_admin_page === "0"){
             recordHit();
         }
     });
@@ -36,7 +34,7 @@ function fetchData() {
         })
         .then(function(data) {
             if (data && Object.keys(data).length > 0) {
-                if (window.wts_data.is_admin) {
+                if (window.wts_data.is_admin_user === "1") {
                     sendDataToPHP(data);
                 }
                 window.wts_data.fetched = true;
@@ -59,16 +57,11 @@ function recordHit() {
         window.wts7 = {};
         window.wts7.user_id = wts_data.user_id;
         window.wts7.user_info = wts_data.user_info;
-        window.wts7.is_owner = wts_data.is_admin;
+        window.wts7.is_owner = wts_data.is_admin_user;
         window.wts7.origin = "wordPress";
         wtslog7(wts_data.alias, wts_data.db);
     };
     document.head.appendChild(script);
-}
-
-function initAdmin() {
-	// Does nothing. No further admin initializaton needed
-    return;
 }
 
 function sendDataToPHP(data) {

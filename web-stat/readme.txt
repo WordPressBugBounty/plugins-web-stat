@@ -4,7 +4,7 @@ Tags: web analytics, web-stat, web stat, web stats, webstat, traffic analytics, 
 Requires PHP: 5.2.4
 Requires at least: 4.9.5
 Tested up to: 6.8
-Stable tag: 2.5.3
+Stable tag: 2.5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,6 +92,12 @@ Web-Stat loads automatically from the WordPress admin menu. If you prefer, you c
   
 == Changelog ==
 
+= 2.5.6 =
+* Released: 2025-04-14
+* Housekeeping and minor improvements
+= 2.5.5 =
+* Released: 2025-04-14
+* Housekeeping and minor improvements
 = 2.5.4 =
 * Released: 2025-04-12
 * Housekeeping and minor improvements
@@ -184,6 +190,8 @@ non essential modification of Web-Stat.php
 * Initial release
  
 == Upgrade Notice ==
+= 2.5.6 =
+* 2.5.3 bug corrected. Update is recommended
 = 2.5.3 =
 * Faster version, more accurate. Update is recommended
 = 2.0 =
