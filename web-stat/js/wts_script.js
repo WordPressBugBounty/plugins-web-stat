@@ -1,22 +1,39 @@
 function wts_init() {
-    window.wts_data = window.wts_data || {};
-    
-    if (window.wts_data.is_admin_user === "0" && window.wts_data.alias && window.wts_data.db) {
-        window.wts_data.fetched = 1;
-    } else if (window.wts_data.is_admin_user === "1" && window.wts_data.alias && window.wts_data.db && window.wts_data.oc_a2) {
-        window.wts_data.fetched = 1;
-    }
+    try {
+        window.wts_data = window.wts_data || {};
+        console.log("wts_init / v." + window.wts_data.version);
 
-	if (window.wts_data.fetched == 1 && window.wts_data.is_admin_page === "0"){
-    	recordHit();
-        return;
-     }
-    
-    fetchData().then(function() {
-        if (window.wts_data.is_admin_page === "0"){
-            recordHit();
+        if ("is_admin" in window.wts_data) {
+            window.wts_data.is_admin = window.wts_data.is_admin ? "1" : "0";
         }
-    });
+
+        window.wts_data.is_admin_user = window.wts_data.is_admin_user || window.wts_data.is_admin || "0";
+        window.wts_data.is_admin_page = window.wts_data.is_admin_page || "0";
+
+        if (window.wts_data.is_admin_user === "0" && window.wts_data.alias && window.wts_data.db) {
+            window.wts_data.fetched = 1;
+        } else if (
+            window.wts_data.is_admin_user === "1" &&
+            window.wts_data.alias &&
+            window.wts_data.db &&
+            window.wts_data.oc_a2
+        ) {
+            window.wts_data.fetched = 1;
+        }
+
+        if (window.wts_data.fetched == 1 && window.wts_data.is_admin_page === "0") {
+            recordHit();
+            return;
+        }
+
+        fetchData().then(function () {
+            if (window.wts_data.is_admin_page === "0") {
+                recordHit();
+            }
+        });
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 function fetchData() {
@@ -85,7 +102,7 @@ function sendDataToPHP(data) {
             }
         })
         .catch(function(error) {
-            send_debug_message('Error sending data to PHP', error);
+            send_debug_message('AJAX exception', error);
         });
 }
 

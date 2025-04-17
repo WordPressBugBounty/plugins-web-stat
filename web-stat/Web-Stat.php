@@ -3,7 +3,7 @@
 Plugin Name: Web-Stat
 Plugin URI: https://www.web-stat.com/
 Description: Free, real-time stats for your website with full visitor details and traffic analytics.
-Version: 2.5.6
+Version: 2.5.7
 Author: <a href="https://www.web-stat.com" target="_new">Web-Stat</a>
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 class WebStatPlugin {
-    const VERSION = '2.5';
+    const VERSION = '2.5.7';
     private $site_id = null;
     private $alias = null;
     private $db = null;
@@ -88,7 +88,10 @@ class WebStatPlugin {
 
     // Fetch data if needed then load log7 or admin options
     public function enqueue_scripts() {
-        wp_enqueue_script('wts_init_js', plugin_dir_url(__FILE__) . 'js/wts_script.js', array(), '1.0.0', true);
+		$script_path = plugin_dir_path(__FILE__) . 'js/wts_script.js';
+        $script_url  = plugin_dir_url(__FILE__) . 'js/wts_script.js';
+        $script_ver  = file_exists($script_path) ? filemtime($script_path) : '1.0.0';
+		wp_enqueue_script('wts_init_js', $script_url, array(), $script_ver, true);
         $wts_data = array('ajax_url' => 'https://app.ardalio.com/ajax.pl', 'action' => 'get_wp_data', 'version' => self::VERSION, 'alias' => $this->alias, 'db' => $this->db, 'site_id' => $this->site_id, 'old_uid' => $this->old_uid, 'url' => get_bloginfo('url'), 'language' => get_bloginfo('language'), 'time_zone' => get_option('timezone_string'), 'gmt_offset' => get_option('gmt_offset'), 'email' => get_option('admin_email') );
         if ($this->is_admin_user) {
             $nonce = wp_create_nonce('wts_ajax_nonce');
@@ -126,9 +129,7 @@ class WebStatPlugin {
     public function handle_ajax_data() {
         if (!$this->has_json) {
             // send error back to wts_init_js
-            header("Content-Type: application/json");
-    		echo '{ "success": false, "data": "JSON not available" }';
-   			wp_die();
+            wp_send_json_error('JSON not available');
         }
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wts_ajax_nonce')) {
             // send error back to wts_init_js
