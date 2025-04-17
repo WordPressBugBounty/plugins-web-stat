@@ -94,16 +94,18 @@ function sendDataToPHP(data) {
             })
         })
         .then(function(response) {
-            return response.json();
-        })
-        .then(function(response) {
-            if (! response.success) {
-				send_debug_message('Error sending data to PHP', response.data);
-            }
-        })
-        .catch(function(error) {
-            send_debug_message('AJAX exception', error);
-        });
+    		return response.text(); // Get raw response
+		})
+		.then(function(text) {
+			try {
+    			const json = JSON.parse(text);
+				if (!json.success) {
+        			send_debug_message('Error sending data to PHP', json.data);
+        		}
+    		} catch (e) {
+        		send_debug_message('AJAX response is not valid JSON', text);
+    		}
+		});
 }
 
 function send_debug_message(e_text, e_object) {
