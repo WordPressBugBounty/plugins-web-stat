@@ -3,7 +3,7 @@
 Plugin Name: Web-Stat
 Plugin URI: https://www.web-stat.com/
 Description: Free, real-time stats for your website with full visitor details and traffic analytics.
-Version: 2.5.8
+Version: 2.5.9
 Author: <a href="https://www.web-stat.com" target="_new">Web-Stat</a>
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 class WebStatPlugin {
-    const VERSION = '2.5.8';
+    const VERSION = '2.5.9';
     private $site_id = null;
     private $alias = null;
     private $db = null;
@@ -130,44 +130,54 @@ class WebStatPlugin {
     }
     
     // If data was fetched by JS, recover it and save it
-    public function handle_ajax_data() {
-        if (!$this->has_json) {
-            // send error back to wts_init_js
-            wp_send_json_error('JSON not available');
-        }
-        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wts_ajax_nonce')) {
-            // send error back to wts_init_js
-            wp_send_json_error('Invalid nonce');
-            return;
-        }
-        $data = isset($_POST['data']) ? $_POST['data'] : '';
-        if (!empty($data)) {
-            $data = json_decode(stripslashes($data), true);
-			if (isset($data['alias'], $data['db']) &&
-   			 preg_match('/^\d+$/', $data['alias']) &&
-   			 preg_match('/^\d{1,2}$/', $data['db'])) {
-                $this->alias = $data['alias'];
-                $this->db = $data['db'];
-                update_option('wts_alias', $this->alias);
-                update_option('wts_db', $this->db);
-                if (isset($data['oc_a2'])) {
-                    update_option('wts_oc_a2', $data['oc_a2']);
-                }
-                wp_send_json_success();
-            }
-            else{
-				$aliasValue = $data['alias'] ?? 'not set';
-				$dbValue = $data['db'] ?? 'not set';
-				wp_send_json_error('wts_init_js sent invalid alias (' . $aliasValue . ') or invalid db (' . $dbValue . ')');
-            	return;
-            }
-        }
-        else{
-			wp_send_json_error(' wts_init_js sent back empty data');
-            return;
-        }
-    }
-    
+	public function handle_ajax_data() {
+    	try {
+        	if (!$this->has_json) {
+            	wp_send_json_error('JSON not available');
+	        }
+
+	        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'wts_ajax_nonce')) {
+    	        wp_send_json_error('Invalid nonce');
+        	}
+
+      	  $raw_data = $_POST['data'] ?? '';
+
+ 	       if (empty($raw_data)) {
+    	        wp_send_json_error('wts_init_js sent back empty data');
+ 	       }
+
+    	    $decoded = json_decode(stripslashes($raw_data), true);
+
+    	    if (json_last_error() !== JSON_ERROR_NONE) {
+        	    wp_send_json_error('JSON decoding failed: ' . json_last_error_msg());
+      	  }
+
+    	    $alias = $decoded['alias'] ?? null;
+    	    $db    = $decoded['db'] ?? null;
+
+    	    if (preg_match('/^\d+$/', $alias) && preg_match('/^\d{1,2}$/', $db)) {
+				$this->alias = $alias;
+         		$this->db    = $db;
+
+          		update_option('wts_alias', $this->alias);
+            	update_option('wts_db', $this->db);
+
+	            if (isset($decoded['oc_a2'])) {
+    	            update_option('wts_oc_a2', $decoded['oc_a2']);
+        	    }
+
+	  	  		wp_send_json_success();
+			} 
+			else {
+            	wp_send_json_error("wts_init_js sent invalid alias ($alias) or invalid db ($db)");
+        	}
+
+		} 
+		catch (Throwable $e) {
+        	wp_send_json_error('Fatal error in AJAX handler: ' . $e->getMessage());
+		}
+	}
+	
     private function stx($t) {
         $tr = strrev($t);
         $hex = bin2hex($tr);

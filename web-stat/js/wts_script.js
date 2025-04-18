@@ -83,29 +83,30 @@ function recordHit() {
 
 function sendDataToPHP(data) {
     fetch(wts_data.php_ajax_url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({
-                action: 'handle_ajax_data',
-                nonce: wts_data.nonce,
-                data: JSON.stringify(data)
-            })
+    	method: 'POST',
+        headers: {
+        	'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+            action: 'handle_ajax_data',
+            nonce: wts_data.nonce,
+            data: JSON.stringify(data)
         })
-        .then(function(response) {
-    		return response.text(); // Get raw response
-		})
-		.then(function(text) {
-			try {
-    			const json = JSON.parse(text);
-				if (!json.success) {
-        			send_debug_message('Error sending data to PHP', json.data);
-        		}
-    		} catch (e) {
-        		send_debug_message('AJAX response is not valid JSON', text);
-    		}
-		});
+    })
+    .then(function(response) {
+    	return response.text(); // Get raw response
+	})
+	.then(function(text) {
+		try {
+    		const json = JSON.parse(text);
+			if (!json.success) {
+    			send_debug_message('Error sending data to PHP', json.data);
+        	}
+    	} 
+    	catch (e) {
+    		send_debug_message('AJAX response is not valid JSON', text);
+    	}
+	});
 }
 
 function send_debug_message(e_text, e_object) {
