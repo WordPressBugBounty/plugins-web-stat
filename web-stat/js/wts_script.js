@@ -10,9 +10,15 @@ function wts_init() {
         window.wts_data.is_admin_user = window.wts_data.is_admin_user || window.wts_data.is_admin || "0";
         window.wts_data.is_admin_page = window.wts_data.is_admin_page || "0";
 
-        if (window.wts_data.is_admin_user === "0" && window.wts_data.alias && window.wts_data.db) {
+        if (
+        	window.wts_data.is_admin_user === "0" && 
+        	window.wts_data.alias && 
+        	window.wts_data.db && 
+        	window.wts_data.oc
+        ) {
             window.wts_data.fetched = 1;
-        } else if (
+        } 
+        else if (
             window.wts_data.is_admin_user === "1" &&
             window.wts_data.alias &&
             window.wts_data.db &&
@@ -21,8 +27,10 @@ function wts_init() {
             window.wts_data.fetched = 1;
         }
 
-        if (window.wts_data.fetched == 1 && window.wts_data.is_admin_page === "0") {
-            recordHit();
+        if (window.wts_data.fetched == 1) {
+    		if (window.wts_data.is_admin_page === "0"){
+         	   recordHit();
+    		}
             return;
         }
 

@@ -3,7 +3,7 @@
 Plugin Name: Web-Stat
 Plugin URI: https://www.web-stat.com/
 Description: Free, real-time stats for your website with full visitor details and traffic analytics.
-Version: 2.5.9
+Version: 2.6
 Author: <a href="https://www.web-stat.com" target="_new">Web-Stat</a>
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 class WebStatPlugin {
-    const VERSION = '2.5.9';
+    const VERSION = '2.6';
     private $site_id = null;
     private $alias = null;
     private $db = null;
@@ -27,6 +27,7 @@ class WebStatPlugin {
     private $has_openssl = false;
     private $has_json = false;
     private $oc_a2 = null;
+    private $oc = null;
     private $is_admin_user = 0;
     private $is_admin_page = 0;
         
@@ -56,6 +57,7 @@ class WebStatPlugin {
 		delete_option('wts_alias');
 		delete_option('wts_db');
 		delete_option('wts_oc_a2');
+		delete_option('wts_oc');
     }
     
     // Get stored data if any and create a site_id if none
@@ -69,6 +71,7 @@ class WebStatPlugin {
         }
         $this->alias = get_option('wts_alias');
         $this->db = get_option('wts_db');
+        $this->oc = get_option('wts_oc');
         $this->oc_a2 = current_user_can('install_plugins') ? (get_option('wts_oc_a2')) : null;
         $this->language = substr(get_bloginfo('language'), 0, 2);
         if (!preg_match('/^[a-z]{2}$/', $this->language)) {
@@ -107,6 +110,7 @@ class WebStatPlugin {
                 $encryptedData = $this->stx(time());
             }
             $wts_data['php_ajax_url'] = admin_url('admin-ajax.php');
+            $wts_data['oc'] = $this->oc;
             $wts_data['oc_a2'] = $this->oc_a2;
             $wts_data['is_admin_user'] = 1;
             $wts_data['is_admin_page'] = $this->is_admin_page ;
@@ -162,6 +166,9 @@ class WebStatPlugin {
           		update_option('wts_alias', $this->alias);
             	update_option('wts_db', $this->db);
 
+	            if (isset($decoded['oc'])) {
+    	            update_option('wts_oc', $decoded['oc']);
+        	    }
 	            if (isset($decoded['oc_a2'])) {
     	            update_option('wts_oc_a2', $decoded['oc_a2']);
         	    }
@@ -249,7 +256,7 @@ class WebStatPlugin {
         $host = $this->get_host();
         $url = $host . '/' . $page . '?oc_a2=' . $this->oc_a2 . '&is_admin=' . $this->is_admin_user . '&version=' . self::VERSION . '&source=WordPress';
         if (!$host || !$page || !$this->oc_a2){
-           self::send_php_error('Could not display dashboard / host = ' . $host . ' / page = ' . $page . ' / oc_a2 = ' . $this->oc_a2);
+           self::send_php_error('Could not display page ' . $url);
         }
         echo '
         <style>
@@ -271,7 +278,7 @@ class WebStatPlugin {
             display: none !important;
         }
         </style>
-        <iframe src="' . $url . '" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" id="wts_iframe"></iframe>';
+        <iframe src="' . esc_url($url) . '" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" id="wts_iframe"></iframe>';
     }
     private function get_host() {
         if (in_array($this->language, $this->supported_languages)) {
@@ -301,15 +308,21 @@ class WebStatPlugin {
             $wp_meta_boxes['dashboard']['normal']['high']['wts_dashboard_widget'] = $widget;
         }
     }
-    public function render_dashboard_widget() {
-        $dashboard_url = urlencode(admin_url());
-        $host = $this->get_host();
-        $url = $host . '/wpFrame.htm?&oc_a2=' . $this->oc_a2 . '&version=' . self::VERSION . '&dashboard_url=' . $dashboard_url;
-        if (!$host || !$this->oc_a2){
-           self::send_php_error('Could not display dashboard widget / host = ' . $host . ' / oc_a2 = ' . $this->oc_a2 . ' / dashboard_url = '.$dashboard_url);
-        }
-        echo '<iframe src="' . $url . '" style="width:100%; height:500px;" id="wts_iframe"></iframe>';
-    }
+	public function render_dashboard_widget() {
+    	$dashboard_url = urlencode(admin_url());
+		$host = $this->get_host();
+		if ($host && $this->oc_a2) {
+   			$url = $host . '/wpFrame.htm?&oc_a2=' . $this->oc_a2 . '&version=' . self::VERSION . '&dashboard_url=' . $dashboard_url;
+  	  	} 
+  	  	elseif ($host && $this->oc) {
+    		$url = $host . '/wpFrame.htm?&oc=' . $this->oc . '&version=' . self::VERSION . '&dashboard_url=' . $dashboard_url;
+		}
+		else {
+   			self::send_php_error('Could not display dashboard widget at ' . $url .' / dashboard_url = ' . $dashboard_url);
+    	    return; // Exit early
+   		}
+  		echo '<iframe src="' . esc_url($url) . '" style="width:100%; height:500px;" id="wts_iframe"></iframe>';
+	}
     
     public function add_plugin_row_meta($links, $plugin_file) {
         // Check if this is the plugin we want to modify
